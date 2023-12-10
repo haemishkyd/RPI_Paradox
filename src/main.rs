@@ -107,9 +107,11 @@ fn main(){
                     log::debug!("Full message recieved!");
                     if final_buf[0] == 0xE0{
                         if (final_buf[7] == 0x02) && (final_buf[8] == 0x0C){
+                            send_to_ha(0,"armed_away".to_string(), cli.clone());
                             log::debug!("Alarm Armed");
                         }
                         if (final_buf[7] == 0x02) && (final_buf[8] == 0x0B){
+                            send_to_ha(0,"disarmed".to_string(), cli.clone());
                             log::debug!("Alarm Disarmed");
                         }
                         if final_buf[7] == 0x00 {
