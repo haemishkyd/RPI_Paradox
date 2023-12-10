@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 paho-mqtt = "0.12.3"
 serialport = "4.2.2"
+syslog = "6.1.0"
+log = "0.4.20"
