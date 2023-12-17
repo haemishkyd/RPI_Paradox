@@ -74,7 +74,7 @@ fn main(){
         .finalize();
 
     // Connect and wait for it to complete or fail.
-    if let Err(e) = cli.connect(conn_opts) {
+    if let Err(e) = cli.connect(conn_opts.clone()) {
         log::error!("Unable to connect:\n\t{:?}", e);
         process::exit(1);
     }
@@ -102,81 +102,89 @@ fn main(){
                     Err(ref e) if e.kind() == io::ErrorKind::TimedOut => (),
                     Err(e) => eprintln!("{:?}", e),                    
                 }
-                if final_buf.len() >= 36{
-                    println!("{:x?}",final_buf);
-                    log::debug!("Full message recieved!");
-                    if final_buf[0] == 0xE0{
-                        if (final_buf[7] == 0x02) && (final_buf[8] == 0x0C){
-                            send_to_ha(0,"armed_away".to_string(), cli.clone());
-                            log::debug!("Alarm Armed");
-                        }
-                        if (final_buf[7] == 0x02) && (final_buf[8] == 0x0B){
-                            send_to_ha(0,"disarmed".to_string(), cli.clone());
-                            log::debug!("Alarm Disarmed");
-                        }
-                        if final_buf[7] == 0x00 {
-                            send_to_ha(final_buf[8],"{\"state\":0}".to_string(), cli.clone());
-                            if final_buf[8] == 0x01 {                                
-                                log::debug!("Zone 1 Deactivated");
+                if cli.is_connected() {
+                    if final_buf.len() >= 36{
+                        println!("{:x?}",final_buf);
+                        log::debug!("Full message recieved!");
+                        if final_buf[0] == 0xE0{
+                            if (final_buf[7] == 0x02) && (final_buf[8] == 0x0C){
+                                send_to_ha(0,"armed_away".to_string(), cli.clone());
+                                log::debug!("Alarm Armed");
                             }
-                            if final_buf[8] == 0x02{
-                                log::debug!("Zone 2 Deactivated");
+                            if (final_buf[7] == 0x02) && (final_buf[8] == 0x0B){
+                                send_to_ha(0,"disarmed".to_string(), cli.clone());
+                                log::debug!("Alarm Disarmed");
                             }
-                            if final_buf[8] == 0x03{
-                                log::debug!("Zone 3 Deactivated");
+                            if final_buf[7] == 0x00 {
+                                send_to_ha(final_buf[8],"{\"state\":0}".to_string(), cli.clone());
+                                if final_buf[8] == 0x01 {                                
+                                    log::debug!("Zone 1 Deactivated");
+                                }
+                                if final_buf[8] == 0x02{
+                                    log::debug!("Zone 2 Deactivated");
+                                }
+                                if final_buf[8] == 0x03{
+                                    log::debug!("Zone 3 Deactivated");
+                                }
+                                if final_buf[8] == 0x04{
+                                    log::debug!("Zone 4 Deactivated");
+                                }
+                                if final_buf[8] == 0x05{
+                                    log::debug!("Zone 5 Deactivated");
+                                }
+                                if final_buf[8] == 0x06{
+                                    log::debug!("Zone 6 Deactivated");
+                                }
+                                if final_buf[8] == 0x07{
+                                    log::debug!("Zone 7 Deactivated");
+                                }
+                                if final_buf[8] == 0x08{
+                                    log::debug!("Zone 8 Deactivated");
+                                }
+                                if final_buf[8] == 0x09{
+                                    log::debug!("Zone 9 Deactivated");
+                                }
+                            } 
+                            if final_buf[7] == 0x01 {
+                                send_to_ha(final_buf[8],"{\"state\":1}".to_string(), cli.clone());
+                                if final_buf[8] == 0x01{                                
+                                    log::debug!("Zone 1 Activated");
+                                }
+                                if final_buf[8] == 0x02{
+                                    log::debug!("Zone 2 Activated");
+                                }
+                                if final_buf[8] == 0x03{
+                                    log::debug!("Zone 3 Activated");
+                                }
+                                if final_buf[8] == 0x04{
+                                    log::debug!("Zone 4 Activated");
+                                }
+                                if final_buf[8] == 0x05{
+                                    log::debug!("Zone 5 Activated");
+                                }
+                                if final_buf[8] == 0x06{
+                                    log::debug!("Zone 6 Activated");
+                                }
+                                if final_buf[8] == 0x07{
+                                    log::debug!("Zone 7 Activated");
+                                }
+                                if final_buf[8] == 0x08{
+                                    log::debug!("Zone 8 Activated");
+                                }
+                                if final_buf[8] == 0x09{
+                                    log::debug!("Zone 9 Activated");
+                                }
                             }
-                            if final_buf[8] == 0x04{
-                                log::debug!("Zone 4 Deactivated");
-                            }
-                            if final_buf[8] == 0x05{
-                                log::debug!("Zone 5 Deactivated");
-                            }
-                            if final_buf[8] == 0x06{
-                                log::debug!("Zone 6 Deactivated");
-                            }
-                            if final_buf[8] == 0x07{
-                                log::debug!("Zone 7 Deactivated");
-                            }
-                            if final_buf[8] == 0x08{
-                                log::debug!("Zone 8 Deactivated");
-                            }
-                            if final_buf[8] == 0x09{
-                                log::debug!("Zone 9 Deactivated");
-                            }
-                        } 
-                        if final_buf[7] == 0x01 {
-                            send_to_ha(final_buf[8],"{\"state\":1}".to_string(), cli.clone());
-                            if final_buf[8] == 0x01{                                
-                                log::debug!("Zone 1 Activated");
-                            }
-                            if final_buf[8] == 0x02{
-                                log::debug!("Zone 2 Activated");
-                            }
-                            if final_buf[8] == 0x03{
-                                log::debug!("Zone 3 Activated");
-                            }
-                            if final_buf[8] == 0x04{
-                                log::debug!("Zone 4 Activated");
-                            }
-                            if final_buf[8] == 0x05{
-                                log::debug!("Zone 5 Activated");
-                            }
-                            if final_buf[8] == 0x06{
-                                log::debug!("Zone 6 Activated");
-                            }
-                            if final_buf[8] == 0x07{
-                                log::debug!("Zone 7 Activated");
-                            }
-                            if final_buf[8] == 0x08{
-                                log::debug!("Zone 8 Activated");
-                            }
-                            if final_buf[8] == 0x09{
-                                log::debug!("Zone 9 Activated");
-                            }
-                        }
-                    }                   
-                    final_buf.clear();
-                    message_started = false;
+                        }                   
+                        final_buf.clear();
+                        message_started = false;
+                    }
+                } else {
+                    // Connect and wait for it to complete or fail.
+                    if let Err(e) = cli.connect(conn_opts.clone()) {
+                        log::error!("Unable to connect:\n\t{:?}", e);
+                        process::exit(1);
+                    }
                 }
             }
         }
@@ -197,9 +205,8 @@ fn send_to_ha(topic: u8, content: String, cli: mqtt::Client){
     // Publish message to 'test' and 'hello' topics.
     let content =  content.to_string();
     let msg = mqtt::Message::new(DFLT_TOPICS[topic as usize], content, QOS);
-    let tok = cli.publish(msg);
 
-    if let Err(e) = tok {
+    if let Err(e) = cli.publish(msg) {
        println!("Error sending message: {:?}", e);
     }
 }
