@@ -182,8 +182,7 @@ fn main(){
                 } else {
                     // Connect and wait for it to complete or fail.
                     if let Err(e) = cli.connect(conn_opts.clone()) {
-                        log::error!("Unable to connect:\n\t{:?}", e);
-                        process::exit(1);
+                        log::error!("Unable to connect:\n\t{:?}", e);                        
                     }
                 }
             }
